@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import cn.lelight.iot.blemesh.demo.MainActivity
+import cn.lelight.iot.blemesh.demo.MyApplication
 import cn.lelight.iot.blemesh.demo.R
 import cn.lelight.iot.blemesh.demo.databinding.FragmentDashboardBinding
 import cn.lelight.leiot.data.LeDataCenter
@@ -64,7 +65,7 @@ class DevicesFragment : Fragment() {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        (requireActivity() as MainActivity).isInit.observeForever {
+        MyApplication.isInit.observeForever {
             if (it) {
                 // 初始化成功
                 dataManger = LeHomeSdk.getDataManger()
