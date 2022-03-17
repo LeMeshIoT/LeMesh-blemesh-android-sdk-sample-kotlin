@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import cn.lelight.iot.blemesh.demo.BleMeshDemoInstance
+import cn.lelight.iot.blemesh.demo.BuildConfig
 import cn.lelight.iot.blemesh.demo.databinding.FragmentHomeBinding
 import cn.lelight.iot.blemesh.demo.ui.adddevice.AddDevicesActivity
+import cn.lelight.leiot.sdk.LeHomeSdk
 import com.afollestad.materialdialogs.MaterialDialog
 
 class HomeFragment : Fragment() {
@@ -34,13 +37,22 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        BleMeshDemoInstance.get().msg.observe(viewLifecycleOwner){
+        BleMeshDemoInstance.get().msg.observe(viewLifecycleOwner) {
             binding.textHome2.text = it
             materialDialog?.dismiss()
         }
 
+        if (LeHomeSdk.getBleLeMeshManger() != null) {
+            binding.textHome.text =
+                "ver:${LeHomeSdk.getBleLeMeshManger().version}\n${BuildConfig.BUILDTIME}"
+        }
+
         binding.btnAddDevice.setOnClickListener {
             // 添加设备
+            if (LeHomeSdk.getBleLeMeshManger() == null) {
+                Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             requireActivity().startActivity(
                 Intent(
                     requireActivity(),
