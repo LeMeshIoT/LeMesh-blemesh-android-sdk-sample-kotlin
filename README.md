@@ -37,3 +37,4 @@ fun init(context: Context) {
 2. 初始化blemesh模块
 3. 添加设备(如果之前添加了可以忽略这步)
 4. 控制设备
+

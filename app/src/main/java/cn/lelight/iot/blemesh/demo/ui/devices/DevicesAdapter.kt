@@ -7,19 +7,80 @@ import android.widget.Toast
 import cn.lelight.iot.blemesh.demo.CommonDeviceActivity
 import cn.lelight.iot.blemesh.demo.R
 import cn.lelight.leiot.data.bean.DeviceBean
+import cn.lelight.leiot.data.leenum.DeviceType
+import cn.lelight.leiot.sdk.LeHomeSdk
 import cn.lelight.leiot.sdk.adapter.CommonAdapter
 import cn.lelight.leiot.sdk.adapter.ViewHolder
 import cn.lelight.leiot.sdk.api.callback.IDeleteDeviceCallback
+import cn.lelight.leiot.sdk.utils.Arrays
+import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.MaterialDialog.Builder
 import com.google.gson.Gson
+import kotlin.experimental.and
 
 internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
     CommonAdapter<DeviceBean>(context, datas, R.layout.item_data_device) {
     override fun convert(holder: ViewHolder, deviceBean: DeviceBean) {
-        holder.getTextView(R.id.tv_device_name).text = deviceBean.getMac()
-        holder.getTextView(R.id.tv_device_kind).text =
-            "0x" + String.format("%02x", deviceBean.getDevSubType()).toUpperCase()
-        holder.getTextView(R.id.tv_device_dps).text = Gson().toJson(deviceBean.getDps())
+
+        holder.getImageView(R.id.iv_icon).setImageResource(
+            when (deviceBean.type) {
+                DeviceType.Light.type ->
+                    R.drawable.ic_sim_ble
+                DeviceType.Curtain.type ->
+                    R.drawable.public_icon_blind_a
+                DeviceType.Switch.type ->
+                    R.drawable.ic_tough_switch_icon_one_on
+                else ->
+                    R.drawable.public_icon_unkown
+            }
+
+        )
+
+        holder.getTextView(R.id.tv_device_rename).setOnClickListener {
+            MaterialDialog.Builder(mContext)
+                .title("请输入名字")
+                .input("", "", false) { dialog, input ->
+                    var name = input.toString()
+                    deviceBean.reName(name)
+                }.show()
+        }
+
+        holder.getTextView(R.id.tv_device_name).text = deviceBean.getName()
+        holder.getTextView(R.id.tv_device_mac).text =
+            "MAC:" + deviceBean.getMac() + " " + "0x" + String.format(
+                "%02x",
+                deviceBean.getDevSubType()
+            ).toUpperCase()
+
+        holder.getTextView(R.id.tv_device_kind).text = if (deviceBean.isOnline) {
+            "在线"
+        } else {
+            "离线"
+        }
+
+        //
+        //
+        holder.getmConverView().setOnLongClickListener {
+            // 点击事件
+            MaterialDialog.Builder(mContext)
+                .title("输入命令和参数(16进制)")
+                .content("不清楚请勿随意设置")
+                .input("", "") { dialog, input ->
+                    val hexToBytes = Arrays.hexToBytes(input.toString())
+                    LeHomeSdk.getBleLeMeshManger().sendGwMsg(
+                        deviceBean.getMac(),
+                        deviceBean.getPid().toInt(16),
+                        1,
+                        (hexToBytes[0].and(0xFF.toByte())).toInt(),
+                        input.toString().substring(2)
+                    )
+                }
+                .positiveText("发送")
+                .negativeText("取消")
+                .show()
+
+            return@setOnLongClickListener true
+        }
         //
         holder.getmConverView().setOnClickListener {
             // 点击事件

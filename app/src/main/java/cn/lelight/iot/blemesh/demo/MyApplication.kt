@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import cn.lelight.leiot.sdk.LeHomeSdk
+import cn.lelight.leiot.sdk.bean.InitType
 import cn.lelight.leiot.sdk.core.InitCallback
 
 class MyApplication : Application() {
@@ -35,6 +36,7 @@ class MyApplication : Application() {
     fun initSdk() {
         LeHomeSdk.init(
             this,
+            InitType.NET_ALWAY,
             appid,
             mac,
             secret
@@ -57,7 +59,7 @@ class MyApplication : Application() {
                     // 检查是否设备有网络
                     "授权失败"
                 }
-                InitCallback.NEED_APPID,InitCallback.NEED_MAC,InitCallback.NEED_SECRET -> {
+                InitCallback.NEED_APPID, InitCallback.NEED_MAC, InitCallback.NEED_SECRET -> {
                     "请填写授权码"
                 }
                 else -> {

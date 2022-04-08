@@ -30,14 +30,16 @@ class BleMeshDemoInstance private constructor() {
         iBleLeMeshManger.initPlugin(
             context
         ) {
-            msg.value = "blemesh初始化:${
-                if (it == 0) {
-                    "完成:${iBleLeMeshManger.deviceMac}"
-                } else {
-                    "失败:$it"
-                }
-            }"
-        }
+            msg.postValue(
+                "blemesh初始化:${
+                    if (it == 0) {
+                        "完成:${iBleLeMeshManger.deviceMac}"
+                    } else {
+                        "失败:$it"
+                    }
+                }"
+            )
+        }.setGroupControlEachAgain(true)
     }
 
 }

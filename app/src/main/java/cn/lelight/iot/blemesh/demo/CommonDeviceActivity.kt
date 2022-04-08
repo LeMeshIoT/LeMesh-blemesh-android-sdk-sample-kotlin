@@ -55,6 +55,10 @@ class CommonDeviceActivity : AppCompatActivity() {
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         }
         //
+        binding.btnSendHeartbeat.setOnClickListener {
+            targetBean?.heartBeat()
+        }
+        //
         initData()
 
         LeHomeSdk.getInstance().setHomeDataChangeListener(object : IHomeDataChangeListener {

@@ -26,6 +26,8 @@ class AddDevicesActivity : AppCompatActivity() {
             override fun foundNewSubDevice(p0: DeviceBean?): Boolean {
                 // todo 这里可以实现过滤逻辑，如只添加灯具/开关/窗帘
                 // todo demo默认所有设备都添加
+                // C386ED0C
+                // A63DEC0C
                 return true
             }
 

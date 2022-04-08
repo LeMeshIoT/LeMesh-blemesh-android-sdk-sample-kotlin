@@ -24,11 +24,25 @@
         android:textSize="14sp" />
 
     <Button
+        android:id="@+id/btn_set_heartbeat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="子设备心跳设置" />
+
+    <Button
         android:id="@+id/btn_add_device"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="添加设备" />
+
+    <Button
+        android:id="@+id/btn_device_ota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="设备升级" />
 
 
 </LinearLayout>

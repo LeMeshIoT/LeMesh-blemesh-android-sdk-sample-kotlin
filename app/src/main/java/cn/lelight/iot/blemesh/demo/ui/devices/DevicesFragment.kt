@@ -268,7 +268,9 @@ class DevicesFragment : Fragment() {
         LeHomeSdk.getInstance()
             .setHomeRoomGroupChangeListener(object : IHomeRoomGroupChangeListener {
                 override fun onRoomBeanAdd(roomBean: RoomBean) {
-                    updateRoomInfo()
+                    if (isHidden.not()) {
+                        updateRoomInfo()
+                    }
                 }
 
                 override fun onRoomBeanUpdate(roomBean: RoomBean) {
@@ -291,6 +293,14 @@ class DevicesFragment : Fragment() {
                     updateRoomInfo()
                 }
             })
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
     private fun deviceUpdateUI() {

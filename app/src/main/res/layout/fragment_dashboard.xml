@@ -47,7 +47,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="100dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -56,7 +56,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:padding="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:text="所有设备"
                 android:textColor="@color/black" />
 
@@ -85,31 +86,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="打开所有" />
+                    android:text="开灯" />
 
                 <Button
                     android:id="@+id/btn_cloes_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
-                    android:text="关闭所有" />
+                    android:text="关灯" />
 
                 <Button
                     android:id="@+id/btn_add_device_to_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
-                    android:text="添加设备" />
+                    android:text="+ 设备" />
 
                 <Button
                     android:id="@+id/btn_del_device_to_group"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_weight="1"
-                    android:text="删除设备" />
+                    android:text="- 设备" />
 
             </LinearLayout>
 
