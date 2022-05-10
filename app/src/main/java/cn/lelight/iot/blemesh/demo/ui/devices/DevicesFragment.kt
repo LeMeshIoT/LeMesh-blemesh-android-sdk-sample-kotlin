@@ -3,13 +3,13 @@ package cn.lelight.iot.blemesh.demo.ui.devices
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import cn.lelight.iot.blemesh.demo.MainActivity
 import cn.lelight.iot.blemesh.demo.MyApplication
 import cn.lelight.iot.blemesh.demo.R
 import cn.lelight.iot.blemesh.demo.databinding.FragmentDashboardBinding
@@ -32,9 +32,14 @@ import cn.lelight.leiot.sdk.api.callback.data.IHomeDataChangeListener
 import cn.lelight.leiot.sdk.api.callback.data.IHomeRoomGroupChangeListener
 import cn.lelight.leiot.sdk.utils.LeLogUtil
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
+import com.afollestad.materialdialogs.list.listItems
+import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.google.android.material.tabs.TabLayout
 
 class DevicesFragment : Fragment() {
+
+    private val TAG = "DevicesFragment"
 
     private var _binding: FragmentDashboardBinding? = null
 
@@ -52,8 +57,6 @@ class DevicesFragment : Fragment() {
     private var roomManger: IRoomManger? = null
     private var groupManger: IGroupManger? = null
 
-    private val binding get() = _binding!!
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,7 +66,7 @@ class DevicesFragment : Fragment() {
             ViewModelProvider(this).get(DevicesViewModel::class.java)
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        val root: View = _binding!!.root
 
         MyApplication.isInit.observeForever {
             if (it) {
@@ -78,7 +81,7 @@ class DevicesFragment : Fragment() {
             }
         }
 
-        binding.tabRoom.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        _binding!!.tabRoom.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val position = tab!!.position
                 val roomBean = allRoomBeans[position]
@@ -94,60 +97,69 @@ class DevicesFragment : Fragment() {
         })
 
         // 所有设备的点击事件
-        binding.tvAllRoomDevices.setOnClickListener {
+        _binding!!.tvAllRoomDevices.setOnClickListener {
             if (targetRoomId == -1) {
                 initRoomData(allRoomBeans[0])
             } else {
                 initRoomData(dataManger!!.getRoomBean(targetRoomId))
             }
             //
-            binding.tvAllRoomDevices.setTextColor(Color.RED)
-            binding.tvAllRoomDevices.textSize = 16f
+            _binding?.tvAllRoomDevices?.setTextColor(Color.RED)
+            _binding?.tvAllRoomDevices?.textSize = 16f
             //
-            if (binding.lvDataGroups.adapter != null) {
-                (binding.lvDataGroups.adapter as GroupAdapter).notifyDataSetChanged()
+            if (_binding?.lvDataGroups?.adapter != null) {
+                (_binding?.lvDataGroups?.adapter as GroupAdapter).notifyDataSetChanged()
             }
         }
 
-        binding.btnAddRoom.setOnClickListener {
-            MaterialDialog.Builder(requireActivity())
-                .title("输入房间名字")
-                .input("", "", false) { dialog, input -> //
+        _binding!!.btnAddRoom.setOnClickListener {
+            if (LeHomeSdk.getBleLeMeshManger() == null) {
+                Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            MaterialDialog(requireContext()).show {
+                title(text = "输入房间名字")
+                input(allowEmpty = false) { materialDialog, input ->
                     roomManger!!.creatRoom(input.toString(), object : ICreateCallback {
                         override fun onAddSuccess() {
-                            Toast.makeText(requireActivity(), "添加成功", Toast.LENGTH_SHORT)
+                            Toast.makeText(requireContext(), "添加成功", Toast.LENGTH_SHORT)
                                 .show()
                         }
 
                         override fun onAddFail(msg: String) {
                             Toast.makeText(
-                                requireActivity(),
+                                requireContext(),
                                 "添加失败:$msg",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     })
                 }
-                .show()
+            }
         }
 
-        binding.btnAddGroup.setOnClickListener {
+        _binding!!.btnAddGroup.setOnClickListener {
+            if (LeHomeSdk.getBleLeMeshManger() == null) {
+                Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (targetRoomId == -1) {
-                Toast.makeText(requireActivity(), "请在房间中添加群组", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "请在房间中添加群组", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             //
-            //
-            MaterialDialog.Builder(requireActivity())
-                .title("输入群组名字")
-                .input("", "", false) { dialog, input -> //
+            MaterialDialog(requireContext()).show {
+                title(text = "输入群组名字")
+                input(allowEmpty = false) { materialDialog, input ->
                     groupManger!!.creatGroup(
                         input.toString(),
                         targetRoomId,
                         object : ICreateCallback {
                             override fun onAddSuccess() {
                                 Toast.makeText(
-                                    requireActivity(),
+                                    requireContext(),
                                     "添加成功",
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -155,26 +167,31 @@ class DevicesFragment : Fragment() {
 
                             override fun onAddFail(msg: String) {
                                 Toast.makeText(
-                                    requireActivity(),
+                                    requireContext(),
                                     "添加失败:$msg",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                         })
                 }
-                .show()
+            }
         }
 
-        binding.btnOpenAll.setOnClickListener {
+        _binding!!.btnOpenAll.setOnClickListener {
             turnOnOff(true)
         }
 
-        binding.btnCloesAll.setOnClickListener {
+        _binding!!.btnCloesAll.setOnClickListener {
             turnOnOff(false)
         }
 
         //
-        binding.btnAddDeviceToGroup.setOnClickListener {
+        _binding!!.btnAddDeviceToGroup.setOnClickListener {
+            if (LeHomeSdk.getBleLeMeshManger() == null) {
+                Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (targetRoomId == -1) {
                 Toast.makeText(requireContext(), "请在房间中添加", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -194,7 +211,12 @@ class DevicesFragment : Fragment() {
         }
 
         //
-        binding.btnDelDeviceToGroup.setOnClickListener {
+        _binding!!.btnDelDeviceToGroup.setOnClickListener {
+            if (LeHomeSdk.getBleLeMeshManger() == null) {
+                Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (targetRoomId == -1) {
                 Toast.makeText(requireContext(), "请在房间中删除", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -268,9 +290,7 @@ class DevicesFragment : Fragment() {
         LeHomeSdk.getInstance()
             .setHomeRoomGroupChangeListener(object : IHomeRoomGroupChangeListener {
                 override fun onRoomBeanAdd(roomBean: RoomBean) {
-                    if (isHidden.not()) {
-                        updateRoomInfo()
-                    }
+                    updateRoomInfo()
                 }
 
                 override fun onRoomBeanUpdate(roomBean: RoomBean) {
@@ -297,6 +317,8 @@ class DevicesFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        //
+        deviceUpdateUI()
     }
 
     override fun onStop() {
@@ -304,6 +326,10 @@ class DevicesFragment : Fragment() {
     }
 
     private fun deviceUpdateUI() {
+        Log.i(TAG, "deviceUpdateUI")
+        if (_binding == null) {
+            return
+        }
         if (targetGroupId != -1) {
             val groupBean = LeDataCenter.getInstance().groupBeanHashMap[targetGroupId]
             groupBean?.let { initGroupData(it) }
@@ -319,6 +345,11 @@ class DevicesFragment : Fragment() {
 
     private fun initData() {
         //
+        val devicesByModuleType = dataManger!!.allDevices
+        devicesByModuleType.forEach {
+            System.out.println("2022年4月9日：" + it.name + " " + it.isOnline)
+        }
+        //
         allDevices = java.util.ArrayList(dataManger!!.allDevices)
         //
         updateRoomInfo()
@@ -326,7 +357,10 @@ class DevicesFragment : Fragment() {
         initRoomData(allRoomBeans[0])
     }
 
+
     private fun updateRoomInfo() {
+        Log.i(TAG, "updateRoomInfo")
+        //
         allRoomBeans = ArrayList(dataManger!!.allRoomBeans)
         LeLogUtil.e("allRoomBeans size:" + allRoomBeans.size)
         // 初始化房间/群组
@@ -335,12 +369,15 @@ class DevicesFragment : Fragment() {
     }
 
     private fun initRoomTabLayout() {
-        binding.tabRoom.removeAllTabs()
+        if (_binding == null) {
+            return
+        }
+        _binding!!.tabRoom.removeAllTabs()
         //
         for (allRoomBean in allRoomBeans) {
-            val tab: TabLayout.Tab = binding.tabRoom.newTab()
+            val tab: TabLayout.Tab = _binding!!.tabRoom.newTab()
             tab.text = allRoomBean.name
-            binding.tabRoom.addTab(tab)
+            _binding?.tabRoom?.addTab(tab)
         }
     }
 
@@ -358,7 +395,7 @@ class DevicesFragment : Fragment() {
             }
         }
         //
-        binding.lvDataDevices.setAdapter(DevicesAdapter(requireActivity(), targetDevices))
+        _binding?.lvDataDevices?.setAdapter(DevicesAdapter(requireContext(), targetDevices))
         //
         val groupIds = roomBean.groupIds
         // todo
@@ -370,15 +407,15 @@ class DevicesFragment : Fragment() {
             }
         }
         //
-        binding.lvDataGroups.setAdapter(
+        _binding?.lvDataGroups?.setAdapter(
             GroupAdapter(
-                requireActivity(),
+                requireContext(),
                 targetRoomGroups
             )
         )
         //
-        binding.tvAllRoomDevices.setTextColor(Color.RED)
-        binding.tvAllRoomDevices.setTextSize(16f)
+        _binding?.tvAllRoomDevices?.setTextColor(Color.RED)
+        _binding?.tvAllRoomDevices?.setTextSize(16f)
     }
 
     inner class GroupAdapter(context: Context, datas: List<GroupBean>) :
@@ -388,8 +425,8 @@ class DevicesFragment : Fragment() {
             if (targetGroupId == groupBean.groupId) {
                 holder.getTextView(R.id.tv_group_name).setTextColor(Color.RED)
                 holder.getTextView(R.id.tv_group_name).textSize = 16f
-                binding.tvAllRoomDevices.setTextColor(Color.BLACK)
-                binding.tvAllRoomDevices.setTextSize(12f)
+                _binding?.tvAllRoomDevices?.setTextColor(Color.BLACK)
+                _binding?.tvAllRoomDevices?.setTextSize(12f)
             } else {
                 holder.getTextView(R.id.tv_group_name).setTextColor(Color.BLACK)
                 holder.getTextView(R.id.tv_group_name).textSize = 12f
@@ -423,7 +460,7 @@ class DevicesFragment : Fragment() {
             }
         }
         //
-        binding.lvDataDevices.setAdapter(DevicesAdapter(requireActivity(), targetDevices))
+        _binding?.lvDataDevices?.setAdapter(DevicesAdapter(requireContext(), targetDevices))
     }
 
     /**
@@ -433,7 +470,7 @@ class DevicesFragment : Fragment() {
      */
     private fun addOrDelDeivceToGroup(type: Int, groupBean: GroupBean) {
         // 选择设备
-        val name: MutableList<String?> = java.util.ArrayList()
+        val name: ArrayList<String> = ArrayList()
         tempDevices.clear()
         for (allDevice in allDevices) {
             if (type == 0 && !groupBean.devIds.contains(allDevice.getDevId())) {
@@ -448,18 +485,20 @@ class DevicesFragment : Fragment() {
         //
         val title =
             if (type == 0) "选择设备(添加到群组:" + groupBean.name + ")" else "选择设备(从群组:" + groupBean.name + "中删除)"
-        MaterialDialog.Builder(requireActivity())
-            .title(title)
-            .items(name)
-            .itemsCallback { dialog, itemView, position, text ->
-                val deviceBean = tempDevices[position]
+
+        MaterialDialog(requireContext()).show {
+            title(text = title)
+            listItems(items = name) { dialog, index, text ->
+
+                val deviceBean = tempDevices[index]
                 //
                 if (type == 0) {
                     deviceBean.addToGroupBean(groupBean)
                 } else {
                     deviceBean.delGroupBean(groupBean)
                 }
-            }.show()
+            }
+        }
     }
 
     /**
@@ -469,7 +508,7 @@ class DevicesFragment : Fragment() {
      */
     private fun addOrDelDeivceToRoomBean(type: Int, roomBean: RoomBean) {
         // 选择设备
-        val name: MutableList<String?> = java.util.ArrayList()
+        val name: ArrayList<String> = ArrayList()
         tempDevices.clear()
         for (allDevice in allDevices) {
             if (type == 0 && !roomBean.devIds.contains(allDevice.getDevId())) {
@@ -485,18 +524,18 @@ class DevicesFragment : Fragment() {
         val title =
             if (type == 0) "选择设备(添加到房间:" + roomBean.name + ")" else "选择设备(从房间:" + roomBean.name + "中删除)"
         //
-        MaterialDialog.Builder(requireActivity())
-            .title(title)
-            .items(name)
-            .itemsCallback { dialog, itemView, position, text ->
-                val deviceBean = tempDevices[position]
+        MaterialDialog(requireContext()).show {
+            title(text = title)
+            listItems(items = name) { dialog, index, text ->
+                val deviceBean = tempDevices[index]
                 //
                 if (type == 0) {
                     deviceBean.addToRoomBean(roomBean)
                 } else {
                     deviceBean.delRoomBean(roomBean)
                 }
-            }.show()
+            }
+        }
     }
 
     override fun onDestroyView() {

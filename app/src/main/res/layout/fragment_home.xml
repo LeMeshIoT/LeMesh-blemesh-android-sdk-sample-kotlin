@@ -23,12 +23,131 @@
         android:layout_marginTop="4dp"
         android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/btn_set_heartbeat"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="子设备心跳设置" />
+        android:background="#e5e5e5"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="相关设置" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="指令重发次数" />
+
+            <EditText
+                android:id="@+id/et_resend"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="" />
+
+            <Button
+                android:id="@+id/btn_resend"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="设置" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="群控命令自动再单控一遍(兼容旧设备)" />
+
+            <androidx.appcompat.widget.AppCompatToggleButton
+                android:id="@+id/tbtn_group_each"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="设置" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="子设备心跳间隔(秒)" />
+
+            <EditText
+                android:id="@+id/et_subtime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="" />
+
+            <Button
+                android:id="@+id/btn_heartbeat"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="设置" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="自动重新搜索时间间隔(秒)" />
+
+            <EditText
+                android:id="@+id/et_rescan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:inputType="number"
+                android:text="" />
+
+            <Button
+                android:id="@+id/btn_rescan"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="设置" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/btn_add_device"
@@ -43,6 +162,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="设备升级" />
-
 
 </LinearLayout>

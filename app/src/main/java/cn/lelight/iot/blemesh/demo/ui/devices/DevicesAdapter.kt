@@ -14,8 +14,7 @@ import cn.lelight.leiot.sdk.adapter.ViewHolder
 import cn.lelight.leiot.sdk.api.callback.IDeleteDeviceCallback
 import cn.lelight.leiot.sdk.utils.Arrays
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.MaterialDialog.Builder
-import com.google.gson.Gson
+import com.afollestad.materialdialogs.input.input
 import kotlin.experimental.and
 
 internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
@@ -37,12 +36,13 @@ internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
         )
 
         holder.getTextView(R.id.tv_device_rename).setOnClickListener {
-            MaterialDialog.Builder(mContext)
-                .title("请输入名字")
-                .input("", "", false) { dialog, input ->
+            MaterialDialog(mContext).show {
+                title(text = "请输入名字")
+                input(hint = "", allowEmpty = false) { dialog, input ->
                     var name = input.toString()
                     deviceBean.reName(name)
-                }.show()
+                }
+            }
         }
 
         holder.getTextView(R.id.tv_device_name).text = deviceBean.getName()
@@ -62,11 +62,12 @@ internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
         //
         holder.getmConverView().setOnLongClickListener {
             // 点击事件
-            MaterialDialog.Builder(mContext)
-                .title("输入命令和参数(16进制)")
-                .content("不清楚请勿随意设置")
-                .input("", "") { dialog, input ->
+            MaterialDialog(mContext).show {
+                title(text = "输入命令和参数(16进制)")
+                message(text = "不清楚请勿随意设置")
+                input { dialog, input ->
                     val hexToBytes = Arrays.hexToBytes(input.toString())
+
                     LeHomeSdk.getBleLeMeshManger().sendGwMsg(
                         deviceBean.getMac(),
                         deviceBean.getPid().toInt(16),
@@ -75,9 +76,9 @@ internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
                         input.toString().substring(2)
                     )
                 }
-                .positiveText("发送")
-                .negativeText("取消")
-                .show()
+                positiveButton(text = "发送")
+                negativeButton(text = "取消")
+            }
 
             return@setOnLongClickListener true
         }
@@ -90,11 +91,10 @@ internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
         }
         //
         holder.getView<View>(R.id.tv_device_del).setOnClickListener { //
-            Builder(mContext)
-                .title("确定删除设备?")
-                .content("请保持设备通电在线,否则需要8短重置才可重新添加")
-                .positiveText("开始删除")
-                .onPositive { dialog, which ->
+            MaterialDialog(mContext).show {
+                title(text = "确定删除设备?")
+                message(text = "请保持设备通电在线,否则需要8短重置才可重新添加")
+                positiveButton(text = "开始删除") {
                     deviceBean.onDelete(object : IDeleteDeviceCallback {
                         override fun onDeleteSuccess() {
                             Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show()
@@ -107,20 +107,23 @@ internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
                         }
                     })
                 }
-                .negativeText("取消")
-                .show()
+                negativeButton(text = "取消")
+            }
         }
     }
 
     private fun showDeleteData(msg: String, deviceBean: DeviceBean) {
-        Builder(mContext)
-            .title("删除失败")
-            .content("原因:$msg\n是否强制删除本地数据?\n(设备需要8短重置)")
-            .positiveText("开始删除")
-            .onPositive { dialog, which ->
+        MaterialDialog(mContext).show {
+            title(text = "删除失败")
+            message(
+                text = "原因:$msg\n" +
+                        "是否强制删除本地数据?\n" +
+                        "(设备需要8短重置)"
+            )
+            positiveButton(text = "开始删除") {
                 deviceBean.onDeleteData()
             }
-            .negativeText("取消")
-            .show()
+            negativeButton(text = "取消")
+        }
     }
 }

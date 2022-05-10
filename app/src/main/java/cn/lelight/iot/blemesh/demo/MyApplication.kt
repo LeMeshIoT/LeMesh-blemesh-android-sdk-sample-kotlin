@@ -21,7 +21,6 @@ class MyApplication : Application() {
         }
     }
 
-
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         // 前置初始化
@@ -46,6 +45,12 @@ class MyApplication : Application() {
             var msg = when (result) {
                 InitCallback.SUCCESS -> {
                     BleMeshDemoInstance.get().init(this)
+
+                    val otaManger = LeHomeSdk.getOtaManger()
+                    if (otaManger != null) {
+                        otaManger.otaCenter.init(applicationContext)
+                    }
+
                     isInit.value = true
                     "sdk 初始化成功"
                 }

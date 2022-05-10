@@ -3,6 +3,7 @@ package cn.lelight.iot.blemesh.demo
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import cn.lelight.leiot.sdk.LeHomeSdk
+import cn.lelight.leiot.sdk.utils.ShareUtils
 
 class BleMeshDemoInstance private constructor() {
 
@@ -17,6 +18,39 @@ class BleMeshDemoInstance private constructor() {
 
         fun get(): BleMeshDemoInstance {
             return instance!!
+        }
+    }
+
+    val reSendTime = MutableLiveData<Int>().apply {
+        if (!ShareUtils.getInstance().contain("reSendTime")) {
+            this.value = 3
+        } else {
+            this.value = ShareUtils.getInstance().getInt("reSendTime")
+        }
+    }
+
+    val isEachControl = MutableLiveData<Boolean>().apply {
+        if (!ShareUtils.getInstance().contain("isEachControl")) {
+            this.value = false
+        } else {
+            this.value = ShareUtils.getInstance().getBoolean("isEachControl")
+        }
+    }
+
+    val subDevTime = MutableLiveData<Int>().apply {
+        if (!ShareUtils.getInstance().contain("subDevTime")) {
+            this.value = 120
+        } else {
+            this.value = ShareUtils.getInstance().getInt("subDevTime")
+        }
+    }
+
+    //
+    val reScanTime = MutableLiveData<Int>().apply {
+        if (!ShareUtils.getInstance().contain("reScanTime")) {
+            this.value = 120
+        } else {
+            this.value = ShareUtils.getInstance().getInt("reScanTime")
         }
     }
 
@@ -39,7 +73,12 @@ class BleMeshDemoInstance private constructor() {
                     }
                 }"
             )
-        }.setGroupControlEachAgain(true)
+        }
+        //
+        iBleLeMeshManger.reSendTime = reSendTime.value!!
+        iBleLeMeshManger.setGroupControlEachAgain(isEachControl.value!!)
+        iBleLeMeshManger.setSubDevHeartbeatTime(subDevTime.value!!)
+        iBleLeMeshManger.setCheckScanSubDevTime(reScanTime.value!!)
     }
 
 }

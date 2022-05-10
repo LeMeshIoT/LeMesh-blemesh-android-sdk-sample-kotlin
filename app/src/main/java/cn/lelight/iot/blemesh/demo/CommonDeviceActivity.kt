@@ -1,5 +1,6 @@
 package cn.lelight.iot.blemesh.demo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
@@ -20,6 +21,9 @@ import cn.lelight.leiot.sdk.adapter.ViewHolder
 import cn.lelight.leiot.sdk.api.callback.IControlCallback
 import cn.lelight.leiot.sdk.api.callback.data.IHomeDataChangeListener
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
+import com.afollestad.materialdialogs.list.listItems
+import com.afollestad.materialdialogs.list.listItemsSingleChoice
 
 class CommonDeviceActivity : AppCompatActivity() {
 
@@ -158,89 +162,96 @@ class CommonDeviceActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("CheckResult")
     private fun showInputValueDialog(dpPackageBean: DpPackageBean) {
         //
-        MaterialDialog.Builder(this)
-            .title(dpPackageBean.name!!)
-            .content("请根据具体范围输入数值\n本弹窗不做范围限制，仅作调试测试用")
-            .input(
-                "输入数值", "", false
-            ) { dialog, input ->
-                try {
-                    val value = input.toString().toInt()
-                    // todo
-                    targetBean!!.sendDp(
-                        DpBean(dpPackageBean.id, dpPackageBean.type, value),
-                        object : IControlCallback {
-                            override fun onSuccess() {
-                                Toast.makeText(
-                                    this@CommonDeviceActivity,
-                                    "发送成功",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+        MaterialDialog(this)
+            .show {
+                title(text = dpPackageBean.name!!)
+                message(text = "请根据具体范围输入数值\n本弹窗不做范围限制，仅作调试测试用")
+                input(
+                    hint = "输入数值",
+                    allowEmpty = false,
+                    inputType = InputType.TYPE_CLASS_NUMBER
+                ) { dialog, input ->
+                    try {
+                        val value = input.toString().toInt()
+                        //
+                        targetBean!!.sendDp(
+                            DpBean(dpPackageBean.id, dpPackageBean.type, value),
+                            object : IControlCallback {
+                                override fun onSuccess() {
+                                    Toast.makeText(
+                                        this@CommonDeviceActivity,
+                                        "发送成功",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
 
-                            override fun onFail(code: Int, msg: String) {
-                                Toast.makeText(
-                                    this@CommonDeviceActivity,
-                                    "发送失败:$msg",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                            }
-                        })
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                                override fun onFail(code: Int, msg: String) {
+                                    Toast.makeText(
+                                        this@CommonDeviceActivity,
+                                        "发送失败:$msg",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            })
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
-            .inputType(InputType.TYPE_CLASS_NUMBER)
-            .show()
     }
 
+    @SuppressLint("CheckResult")
     private fun showInputStrDialog(dpPackageBean: DpPackageBean) {
-        MaterialDialog.Builder(this)
-            .title(dpPackageBean.name!!)
-            .content("请根据具体操作输入字符\n本弹窗不做内容判断，仅作调试测试用")
-            .input(
-                "输入内容", "", false
-            ) { dialog, input ->
-                try {
-                    val value = input.toString()
-                    // todo
-                    targetBean!!.sendDp(
-                        DpBean(dpPackageBean.id, dpPackageBean.type, value),
-                        object : IControlCallback {
-                            override fun onSuccess() {
-                                Toast.makeText(
-                                    this@CommonDeviceActivity,
-                                    "发送成功",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+        MaterialDialog(this)
+            .show {
+                title(text = dpPackageBean.name!!)
+                message(text = "请根据具体范围输入数值\n本弹窗不做范围限制，仅作调试测试用")
+                input(
+                    hint = "输入内容",
+                    allowEmpty = false
+                ) { dialog, input ->
+                    try {
+                        val value = input.toString()
+                        // todo
+                        targetBean!!.sendDp(
+                            DpBean(dpPackageBean.id, dpPackageBean.type, value),
+                            object : IControlCallback {
+                                override fun onSuccess() {
+                                    Toast.makeText(
+                                        this@CommonDeviceActivity,
+                                        "发送成功",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
 
-                            override fun onFail(code: Int, msg: String) {
-                                Toast.makeText(
-                                    this@CommonDeviceActivity,
-                                    "发送失败:$msg",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                            }
-                        })
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                                override fun onFail(code: Int, msg: String) {
+                                    Toast.makeText(
+                                        this@CommonDeviceActivity,
+                                        "发送失败:$msg",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            })
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
-            .show()
     }
 
+    @SuppressLint("CheckResult")
     private fun showBoolDialog(dpPackageBean: DpPackageBean) {
-        MaterialDialog.Builder(this)
-            .title(dpPackageBean.name!!)
-            .items(*"打开,关闭".split(",".toRegex()).toTypedArray())
-            .itemsCallback { dialog, itemView, position, text ->
+        val myItems = listOf("打开", "关闭")
+        MaterialDialog(this).show {
+            title(text = dpPackageBean.name)
+            listItems(items = myItems) { dialog, index, text ->
                 targetBean!!.sendDp(
-                    DpBean(dpPackageBean.id, dpPackageBean.type, position == 0),
+                    DpBean(dpPackageBean.id, dpPackageBean.type, index == 0),
                     object : IControlCallback {
                         override fun onSuccess() {}
                         override fun onFail(code: Int, msg: String) {
@@ -252,7 +263,8 @@ class CommonDeviceActivity : AppCompatActivity() {
                                 .show()
                         }
                     })
-            }.show()
+            }
+        }
     }
 
     inner class DpPackageBean {
