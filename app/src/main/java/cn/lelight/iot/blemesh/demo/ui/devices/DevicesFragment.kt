@@ -28,6 +28,7 @@ import cn.lelight.leiot.sdk.api.IDataManger
 import cn.lelight.leiot.sdk.api.IGroupManger
 import cn.lelight.leiot.sdk.api.IRoomManger
 import cn.lelight.leiot.sdk.api.callback.ICreateCallback
+import cn.lelight.leiot.sdk.api.callback.data.IDevDataListener
 import cn.lelight.leiot.sdk.api.callback.data.IHomeDataChangeListener
 import cn.lelight.leiot.sdk.api.callback.data.IHomeRoomGroupChangeListener
 import cn.lelight.leiot.sdk.utils.LeLogUtil
@@ -37,7 +38,7 @@ import com.afollestad.materialdialogs.list.listItems
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.google.android.material.tabs.TabLayout
 
-class DevicesFragment : Fragment() {
+class DevicesFragment : Fragment(), IDevDataListener, IHomeRoomGroupChangeListener {
 
     private val TAG = "DevicesFragment"
 
@@ -273,46 +274,9 @@ class DevicesFragment : Fragment() {
 
     private fun initListener() {
         // 监听blemesh
-        LeHomeSdk.getInstance().setHomeDataChangeListener(object : IHomeDataChangeListener {
-            override fun onDeviceAdd(deviceBean: DeviceBean) {
-                deviceUpdateUI()
-            }
-
-            override fun onDeviceUpdate(deviceBean: DeviceBean) {
-                deviceUpdateUI()
-            }
-
-            override fun onDeviceDeleted(deviceBean: DeviceBean) {
-                deviceUpdateUI()
-            }
-        })
+        LeHomeSdk.getInstance().registerDevDataChangeListener(this)
         //
-        LeHomeSdk.getInstance()
-            .setHomeRoomGroupChangeListener(object : IHomeRoomGroupChangeListener {
-                override fun onRoomBeanAdd(roomBean: RoomBean) {
-                    updateRoomInfo()
-                }
-
-                override fun onRoomBeanUpdate(roomBean: RoomBean) {
-                    updateRoomInfo()
-                }
-
-                override fun onRoomBeanDeleted(roomBean: RoomBean) {
-                    updateRoomInfo()
-                }
-
-                override fun onGroupBeanAdd(groupBean: GroupBean) {
-                    updateRoomInfo()
-                }
-
-                override fun onGroupBeanUpdate(groupBean: GroupBean) {
-                    updateRoomInfo()
-                }
-
-                override fun onGroupBeanDeleted(groupBean: GroupBean) {
-                    updateRoomInfo()
-                }
-            })
+        LeHomeSdk.getInstance().registerHomeRoomGroupChangeListener(this)
     }
 
     override fun onResume() {
@@ -539,7 +503,53 @@ class DevicesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        LeHomeSdk.getInstance().unRegisterDevDataChangeListener(this)
+        LeHomeSdk.getInstance().unRegisterHomeRoomGroupChangeListener(this)
         super.onDestroyView()
         _binding = null
     }
+
+    override fun onDeviceAdd(p0: String?) {
+        deviceUpdateUI()
+    }
+
+    override fun onStatusChanged(p0: String?, p1: Boolean) {
+        deviceUpdateUI()
+    }
+
+    override fun onDpUpdate(p0: String?, p1: Int, p2: Int, p3: Any?) {
+    }
+
+    override fun onDevInfoUpdate(p0: String?) {
+        deviceUpdateUI()
+    }
+
+    override fun onRemoved(p0: String?) {
+        deviceUpdateUI()
+    }
+
+    override fun onRoomBeanAdd(roomBean: RoomBean) {
+        updateRoomInfo()
+    }
+
+    override fun onRoomBeanUpdate(roomBean: RoomBean) {
+        updateRoomInfo()
+    }
+
+    override fun onRoomBeanDeleted(roomBean: RoomBean) {
+        updateRoomInfo()
+    }
+
+    override fun onGroupBeanAdd(groupBean: GroupBean) {
+        updateRoomInfo()
+    }
+
+    override fun onGroupBeanUpdate(groupBean: GroupBean) {
+        updateRoomInfo()
+    }
+
+    override fun onGroupBeanDeleted(groupBean: GroupBean) {
+        updateRoomInfo()
+    }
+
 }

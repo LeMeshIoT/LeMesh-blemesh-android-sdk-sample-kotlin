@@ -19,6 +19,7 @@ import cn.lelight.leiot.sdk.api.callback.ota.OtaCheckListener
 import cn.lelight.leiot.sdk.api.callback.ota.OtaListener
 import cn.lelight.leiot.sdk.utils.ShareUtils
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItems
 
 
@@ -145,6 +146,33 @@ class HomeFragment : Fragment() {
             )
         }
 
+        binding.btnAddDevice.setOnLongClickListener {
+            // 添加设备
+            if (LeHomeSdk.getBleLeMeshManger() == null) {
+                Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
+                return@setOnLongClickListener true
+            }
+
+            MaterialDialog(requireContext())
+                .show {
+                    title(text = "提示")
+                    message(text = "输入需要筛选的类型")
+                    input(allowEmpty = false) { materialDialog, charSequence ->
+                        requireActivity().startActivity(
+                            Intent(
+                                requireActivity(),
+                                AddDevicesActivity::class.java
+                            ).apply {
+                                putExtra("type", charSequence.toString())
+                            }
+                        )
+                    }
+                }
+
+
+            true
+        }
+
         binding.btnDeviceOta.setOnClickListener {
             val otaManger = LeHomeSdk.getOtaManger()
             if (otaManger != null) {
@@ -189,7 +217,7 @@ class HomeFragment : Fragment() {
             )
             positiveButton(text = "开始升级") {
                 val dialog = MaterialDialog(requireContext()).show {
-                    message (text = "正在连接设备:" + deviceBean.name){  }
+                    message(text = "正在连接设备:" + deviceBean.name) { }
                 }
 
                 //

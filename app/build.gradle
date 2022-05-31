@@ -61,9 +61,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //
     // sdk组件
-    implementation 'cn.lelight.leiot.sdk:smart:0.1.0'
+    implementation('cn.lelight.leiot.sdk:smart:0.1.0') {
+        exclude group: 'cn.lelight.leiot.sdk', module: 'data'
+    }
+
     // blelemesh模块(可选)
-    implementation 'cn.lelight.leiot.sdk:blelemesh:0.1.0'
+    // implementation 'cn.lelight.leiot.sdk:blelemesh:0.1.0'
     // ota
     implementation 'cn.lelight.leiot.sdk:ota:0.0.1'
 

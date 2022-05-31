@@ -57,11 +57,11 @@ internal class DevicesAdapter(context: Context?, datas: List<DeviceBean?>?) :
         } else {
             "离线"
         }
-
-        //
         //
         holder.getmConverView().setOnLongClickListener {
             // 点击事件
+
+            //
             MaterialDialog(mContext).show {
                 title(text = "输入命令和参数(16进制)")
                 message(text = "不清楚请勿随意设置")
