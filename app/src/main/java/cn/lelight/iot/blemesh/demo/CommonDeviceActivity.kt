@@ -12,9 +12,11 @@ import cn.lelight.leiot.data.bean.DeviceBean
 import cn.lelight.leiot.data.bean.base.DpBean
 import cn.lelight.leiot.data.leenum.DeviceType
 import cn.lelight.leiot.data.leenum.devsubtype.CommercialDevSubType
+import cn.lelight.leiot.data.leenum.devsubtype.SensorDevSubType
 import cn.lelight.leiot.data.leenum.dps.*
 import cn.lelight.leiot.data.leenum.dps.commercial.CardElectriDp
 import cn.lelight.leiot.data.leenum.dps.commercial.TempControllerDp
+import cn.lelight.leiot.data.leenum.dps.sub.RadarSensorDp
 import cn.lelight.leiot.sdk.LeHomeSdk
 import cn.lelight.leiot.sdk.adapter.CommonAdapter
 import cn.lelight.leiot.sdk.adapter.ViewHolder
@@ -107,14 +109,27 @@ class CommonDeviceActivity : AppCompatActivity(), IDevDataListener {
                 dps.add(dpPackageBean)
             }
         } else if (targetBean!!.getType() == DeviceType.Sensor.type) {
-            for (value in SensorDp.values()) {
-                val dpPackageBean = DpPackageBean()
-                dpPackageBean.id = value.dpId
-                dpPackageBean.type = value.type
-                dpPackageBean.name = value.getName()
-                dpPackageBean.mode = value.mode
-                //
-                dps.add(dpPackageBean)
+            if (targetBean!!.getDevSubType() == SensorDevSubType.RADAR_A3.type) {
+                for (value in RadarSensorDp.values()) {
+                    val dpPackageBean = DpPackageBean()
+                    dpPackageBean.id = value.dpId
+                    dpPackageBean.type = value.type
+                    dpPackageBean.name = value.getName()
+                    dpPackageBean.mode = value.mode
+                    dpPackageBean.obj = value.desc
+                    //
+                    dps.add(dpPackageBean)
+                }
+            } else {
+                for (value in SensorDp.values()) {
+                    val dpPackageBean = DpPackageBean()
+                    dpPackageBean.id = value.dpId
+                    dpPackageBean.type = value.type
+                    dpPackageBean.name = value.getName()
+                    dpPackageBean.mode = value.mode
+                    //
+                    dps.add(dpPackageBean)
+                }
             }
         } else if (targetBean!!.getType() == DeviceType.Commercial.type) {
             if (targetBean!!.getDevSubType() == CommercialDevSubType.CardElectri.type) {

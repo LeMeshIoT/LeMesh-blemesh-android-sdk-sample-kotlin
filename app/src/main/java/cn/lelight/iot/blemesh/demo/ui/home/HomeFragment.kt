@@ -92,6 +92,15 @@ class HomeFragment : Fragment() {
             BleMeshDemoInstance.get().isEachControl.value = b
         }
 
+        binding.tbtnGroupEach.setOnCheckedChangeListener { compoundButton, b ->
+            if (LeHomeSdk.getBleLeMeshManger() == null) {
+                Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
+                return@setOnCheckedChangeListener
+            }
+            //
+            LeHomeSdk.getBleLeMeshManger().setOnlyControlProperty(b)
+        }
+
         binding.btnHeartbeat.setOnClickListener {
             if (LeHomeSdk.getBleLeMeshManger() == null) {
                 Toast.makeText(requireContext(), "未初始化/依赖错误", Toast.LENGTH_SHORT).show()
