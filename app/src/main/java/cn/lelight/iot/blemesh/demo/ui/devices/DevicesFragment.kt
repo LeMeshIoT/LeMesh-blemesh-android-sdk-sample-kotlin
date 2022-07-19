@@ -436,13 +436,23 @@ class DevicesFragment : Fragment(), IDevDataListener, IHomeRoomGroupChangeListen
         // 选择设备
         val name: ArrayList<String> = ArrayList()
         tempDevices.clear()
+        var roomBean = dataManger?.getRoomBean(groupBean.parentRoomId)
+        if (roomBean != null) {
+            for (devId in roomBean.devIds) {
+                val deviceBean = dataManger?.getDeviceBean(devId)
+                if (deviceBean != null) {
+                    tempDevices.add(deviceBean)
+                }
+            }
+        }
+        //
         for (allDevice in allDevices) {
             if (type == 0 && !groupBean.devIds.contains(allDevice.getDevId())) {
-                name.add(allDevice.getMac())
+                name.add("${allDevice.getMac()}(${allDevice.name})")
                 tempDevices.add(allDevice)
             }
             if (type == 1 && groupBean.devIds.contains(allDevice.getDevId())) {
-                name.add(allDevice.getMac())
+                name.add("${allDevice.getMac()}(${allDevice.name})")
                 tempDevices.add(allDevice)
             }
         }

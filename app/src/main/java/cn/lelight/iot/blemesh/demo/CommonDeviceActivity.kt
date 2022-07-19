@@ -85,6 +85,7 @@ class CommonDeviceActivity : AppCompatActivity(), IDevDataListener {
                 dpPackageBean.id = value.dpId
                 dpPackageBean.type = value.type
                 dpPackageBean.name = value.getName()
+                dpPackageBean.obj = value.desc
                 //
                 dps.add(dpPackageBean)
             }
@@ -95,6 +96,7 @@ class CommonDeviceActivity : AppCompatActivity(), IDevDataListener {
                 dpPackageBean.id = value.dpId
                 dpPackageBean.type = value.type
                 dpPackageBean.name = value.getName()
+                dpPackageBean.obj = value.desc
                 //
                 dps.add(dpPackageBean)
             }
