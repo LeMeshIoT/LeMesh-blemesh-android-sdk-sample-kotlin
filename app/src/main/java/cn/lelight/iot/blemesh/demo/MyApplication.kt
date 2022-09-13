@@ -11,9 +11,9 @@ import cn.lelight.leiot.sdk.core.InitCallback
 
 class MyApplication : Application() {
 
-    private val appid = ""
-    private val mac = ""
-    private val secret = ""
+    private val appid = "ap0123456789"
+    private val mac = "18146c96742c"
+    private val secret = "qfyVtWi9f9OthPuW1281xYxH722e8pah"
 
     companion object {
         val isInit = MutableLiveData<Boolean>().apply {

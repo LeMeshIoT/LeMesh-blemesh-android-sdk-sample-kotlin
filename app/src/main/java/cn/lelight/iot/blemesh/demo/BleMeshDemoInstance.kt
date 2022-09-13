@@ -3,6 +3,7 @@ package cn.lelight.iot.blemesh.demo
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import cn.lelight.leiot.sdk.LeHomeSdk
+import cn.lelight.leiot.sdk.blelemesh.LeBleLeMeshManger
 import cn.lelight.leiot.sdk.utils.ShareUtils
 
 class BleMeshDemoInstance private constructor() {
